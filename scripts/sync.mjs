@@ -76,6 +76,12 @@ const TARGETS = {
     logo: brand.logo.replace(/^\.\//, ""),
     mcpServers: servers(({ url, headers }) => ({ url, ...(headers && { headers }) })),
   },
+  // What Cursor's Import from Repo reads, the plugin being the repo itself; its manifest says the rest.
+  ".cursor-plugin/marketplace.json": {
+    name: plugin.name,
+    owner,
+    plugins: [{ name: plugin.name, source: "./" }],
+  },
   // `codex plugin marketplace add cherryblossomhq/skills`. Codex reads the root manifest and mcp.json.
   // https://developers.openai.com/plugins/build/plugins
   ".agents/plugins/marketplace.json": {

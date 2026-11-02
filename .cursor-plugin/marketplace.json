@@ -1,0 +1,13 @@
+{
+  "name": "cherryblossom",
+  "owner": {
+    "name": "Cherry Blossom",
+    "email": "dev@trycherryblossom.com"
+  },
+  "plugins": [
+    {
+      "name": "cherryblossom",
+      "source": "./"
+    }
+  ]
+}

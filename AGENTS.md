@@ -23,6 +23,7 @@ Everything else an agent needs is **generated** by `scripts/sync.mjs` from those
 | `.claude-plugin/plugin.json` | Claude Code, which doesn't read the root manifest |
 | `.claude-plugin/marketplace.json` | `claude plugin marketplace add cherryblossomhq/skills` |
 | `.cursor-plugin/plugin.json` | Cursor's own format, which carries the logo |
+| `.cursor-plugin/marketplace.json` | Cursor's Import from Repo and team marketplaces |
 | `.agents/plugins/marketplace.json` | `codex plugin marketplace add cherryblossomhq/skills` |
 
 Never edit a generated file: edit the root, run `npm run sync`, and commit both. CI runs
