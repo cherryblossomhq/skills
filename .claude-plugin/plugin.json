@@ -1,0 +1,34 @@
+{
+  "name": "cherryblossom",
+  "version": "0.1.0",
+  "description": "Design schematics and PCBs in Cherry Blossom from your AI assistant: its MCP server, and skills for building, checking and laying out boards.",
+  "author": {
+    "name": "Cherry Blossom",
+    "email": "dev@trycherryblossom.com",
+    "url": "https://www.trycherryblossom.com"
+  },
+  "homepage": "https://www.trycherryblossom.com/docs/mcp",
+  "repository": "https://github.com/cherryblossomhq/skills",
+  "license": "MIT",
+  "keywords": [
+    "pcb",
+    "schematic",
+    "eda",
+    "electronics",
+    "hardware",
+    "circuit",
+    "mcp"
+  ],
+  "displayName": "Cherry Blossom",
+  "icon": "./assets/logo.svg",
+  "documentationUrl": "https://www.trycherryblossom.com/docs/mcp",
+  "supportUrl": "https://www.trycherryblossom.com/contact",
+  "privacyPolicyUrl": "https://www.trycherryblossom.com/privacy",
+  "termsOfServiceUrl": "https://www.trycherryblossom.com/terms",
+  "mcpServers": {
+    "cherryblossom": {
+      "type": "http",
+      "url": "https://www.trycherryblossom.com/api/mcp"
+    }
+  }
+}

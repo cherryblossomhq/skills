@@ -1,0 +1,38 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "cherryblossom",
+  "version": "0.1.0",
+  "description": "Design schematics and PCBs in Cherry Blossom from your AI assistant: its MCP server, and skills for building, checking and laying out boards.",
+  "author": {
+    "name": "Cherry Blossom",
+    "email": "dev@trycherryblossom.com",
+    "url": "https://www.trycherryblossom.com"
+  },
+  "homepage": "https://www.trycherryblossom.com/docs/mcp",
+  "repository": "https://github.com/cherryblossomhq/skills",
+  "license": "MIT",
+  "keywords": ["pcb", "schematic", "eda", "electronics", "hardware", "circuit", "mcp"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Cherry Blossom",
+        "shortDescription": "Design schematics and PCBs",
+        "longDescription": "Cherry Blossom is a schematic and PCB editor in the browser. This plugin connects your assistant to your Cherry Blossom projects with the tools Cherry Blossom's own copilot designs with: create projects, build and wire schematics, make parts from supplier data, lay out and route the board, pour copper and run checks. Every edit shows live in the editor. It works on every plan, Free included, and spends none of your Cherry Blossom AI credits.",
+        "developerName": "Cherry Blossom",
+        "category": "Productivity",
+        "capabilities": [],
+        "defaultPrompt": [
+          "Make a new Cherry Blossom project for a 555 LED blinker",
+          "Review my latest Cherry Blossom board before I order it"
+        ],
+        "brandColor": "#e0335e",
+        "composerIcon": "./assets/logo.svg",
+        "logo": "./assets/logo.svg",
+        "websiteURL": "https://www.trycherryblossom.com",
+        "supportURL": "https://www.trycherryblossom.com/contact",
+        "privacyPolicyURL": "https://www.trycherryblossom.com/privacy",
+        "termsOfServiceURL": "https://www.trycherryblossom.com/terms"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "cherryblossom",
+  "description": "Design schematics and PCBs",
+  "owner": {
+    "name": "Cherry Blossom",
+    "email": "dev@trycherryblossom.com"
+  },
+  "plugins": [
+    {
+      "name": "cherryblossom",
+      "source": "./",
+      "description": "Design schematics and PCBs in Cherry Blossom from your AI assistant: its MCP server, and skills for building, checking and laying out boards."
+    }
+  ]
+}
