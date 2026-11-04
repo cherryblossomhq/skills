@@ -1,6 +1,10 @@
 # Cherry Blossom skills — agent guide
 
-`CLAUDE.md` is a symlink to this file — edit here, not there.
+There is deliberately no `CLAUDE.md`: Claude Code reads this file when there isn't one. The plugin
+is the whole repo, so a `CLAUDE.md` would ship in it, and the plugin directory flags both kinds: a
+real one is never loaded from a plugin (`claude plugin validate --strict` fails on it) and a symlink
+isn't followed, which holds the plugin as one it can't read completely. Nothing in the repo may be
+a symlink.
 
 One plugin for every AI agent: Cherry Blossom's MCP server and its skills. It is published from this
 repo to Claude Code, Codex and Cursor, and the skills to any agent through `npx skills`.
