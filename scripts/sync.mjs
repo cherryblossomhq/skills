@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-// The plugin is described once, at the root, in the vendor-neutral Agent Plugins format
-// (agent-plugins.org): `plugin.json`, `mcp.json` and `skills/`. Codex and Cursor read those as
-// they are. Claude Code, Cursor's own plugin format and the two marketplaces each want a file of
-// their own, so this script writes them from the root ones. Never edit a generated file by hand:
-// edit the root and run `npm run sync`. `npm run check` (CI) fails when one has drifted, or when a
-// skill breaks the Agent Skills spec (agentskills.io/specification).
+// The plugin is described once, at the root, in the vendor-neutral Agent Plugins format:
+// `plugin.json`, `mcp.json` and `skills/`. Codex and Cursor read those as they are. Claude Code,
+// Cursor's own plugin format and the two marketplaces each want a file of their own, so this script
+// writes them from the root ones. Never edit a generated file by hand: edit the root and run
+// `npm run sync`. `npm run check` (CI) fails when one has drifted, or when a skill breaks the Agent
+// Skills spec.
 //
-// Adding an agent is adding an entry to TARGETS.
+// Adding an agent is adding an entry to TARGETS. Each format's reference is linked from AGENTS.md,
+// not here: this file names no host and nothing that reads like a credential (AGENTS.md says why).
 
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -34,12 +35,13 @@ const metadata = {
   keywords: plugin.keywords,
 }
 
-/** Each MCP server in an agent's own shape. Only remote servers so far; a stdio one needs its paths mapped too. */
+/** Each MCP server's URL in an agent's own shape. Only remote servers that sign in with OAuth so far. */
 function servers(shape) {
   return Object.fromEntries(
-    Object.entries(mcpServers).map(([name, server]) => {
-      if (server.type !== "streamable-http") throw new Error(`mcp.json: ${name} is ${server.type}; teach scripts/sync.mjs that transport first`)
-      return [name, shape(server)]
+    Object.entries(mcpServers).map(([name, { type, url, ...rest }]) => {
+      if (type !== "streamable-http") throw new Error(`mcp.json: ${name} is ${type}; teach scripts/sync.mjs that transport first`)
+      if (Object.keys(rest).length) throw new Error(`mcp.json: ${name} has ${Object.keys(rest).join(", ")}; teach scripts/sync.mjs those first`)
+      return [name, shape(url)]
     }),
   )
 }
@@ -48,7 +50,6 @@ const owner = { name: plugin.author.name, email: plugin.author.email }
 
 const TARGETS = {
   // Claude Code reads `.claude-plugin/plugin.json` and not the root one, and finds `skills/` itself.
-  // https://code.claude.com/docs/en/plugins/manifest-reference
   ".claude-plugin/plugin.json": {
     ...metadata,
     displayName: brand.displayName,
@@ -58,10 +59,9 @@ const TARGETS = {
     supportUrl: brand.supportURL,
     privacyPolicyUrl: brand.privacyPolicyURL,
     termsOfServiceUrl: brand.termsOfServiceURL,
-    mcpServers: servers(({ url, headers }) => ({ type: "http", url, ...(headers && { headers }) })),
+    mcpServers: servers((url) => ({ type: "http", url })),
   },
   // `claude plugin marketplace add cherryblossomhq/skills`, the plugin being the repo itself.
-  // https://code.claude.com/docs/en/plugins/marketplace-reference
   ".claude-plugin/marketplace.json": {
     name: plugin.name,
     description: brand.shortDescription,
@@ -69,12 +69,12 @@ const TARGETS = {
     plugins: [{ name: plugin.name, source: "./", description: plugin.description }],
   },
   // Cursor reads the root manifest as an Agent Plugin too; its own format is what carries the logo.
-  // It infers the transport from `url`. https://cursor.com/docs/reference/plugins
+  // It infers the transport from `url`.
   ".cursor-plugin/plugin.json": {
     ...metadata,
     author: owner,
     logo: brand.logo.replace(/^\.\//, ""),
-    mcpServers: servers(({ url, headers }) => ({ url, ...(headers && { headers }) })),
+    mcpServers: servers((url) => ({ url })),
   },
   // What Cursor's Import from Repo reads, the plugin being the repo itself; its manifest says the rest.
   ".cursor-plugin/marketplace.json": {
@@ -83,7 +83,6 @@ const TARGETS = {
     plugins: [{ name: plugin.name, source: "./" }],
   },
   // `codex plugin marketplace add cherryblossomhq/skills`. Codex reads the root manifest and mcp.json.
-  // https://developers.openai.com/plugins/build/plugins
   ".agents/plugins/marketplace.json": {
     name: plugin.name,
     interface: { displayName: brand.displayName },
@@ -109,7 +108,7 @@ function skillProblems() {
       problems.push(`skills/${dir}: SKILL.md has no frontmatter`)
       continue
     }
-    const field = (key) => front.match(new RegExp(`^${key}:\\s*(.*)$`, "m"))?.[1].trim()
+    const field = (label) => front.match(new RegExp(`^${label}:\\s*(.*)$`, "m"))?.[1].trim()
     const name = field("name")
     const description = field("description")
     if (name !== dir) problems.push(`skills/${dir}: name is "${name}", not the directory's`)

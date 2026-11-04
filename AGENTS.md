@@ -20,11 +20,11 @@ Everything else an agent needs is **generated** by `scripts/sync.mjs` from those
 
 | Generated file | For |
 |---|---|
-| `.claude-plugin/plugin.json` | Claude Code, which doesn't read the root manifest |
-| `.claude-plugin/marketplace.json` | `claude plugin marketplace add cherryblossomhq/skills` |
-| `.cursor-plugin/plugin.json` | Cursor's own format, which carries the logo |
+| `.claude-plugin/plugin.json` | Claude Code, which doesn't read the root manifest ([reference](https://code.claude.com/docs/en/plugins/manifest-reference)) |
+| `.claude-plugin/marketplace.json` | `claude plugin marketplace add cherryblossomhq/skills` ([reference](https://code.claude.com/docs/en/plugins/marketplace-reference)) |
+| `.cursor-plugin/plugin.json` | Cursor's own format, which carries the logo ([reference](https://cursor.com/docs/reference/plugins)) |
 | `.cursor-plugin/marketplace.json` | Cursor's Import from Repo and team marketplaces |
-| `.agents/plugins/marketplace.json` | `codex plugin marketplace add cherryblossomhq/skills` |
+| `.agents/plugins/marketplace.json` | `codex plugin marketplace add cherryblossomhq/skills` ([reference](https://developers.openai.com/plugins/build/plugins)) |
 
 Never edit a generated file: edit the root, run `npm run sync`, and commit both. CI runs
 `npm run check`, which fails when a generated file is stale or a skill breaks the spec, and
@@ -32,6 +32,15 @@ Never edit a generated file: edit the root, run `npm run sync`, and commit both.
 
 **Adding an agent** is one entry in `TARGETS` in `scripts/sync.mjs`. Prefer an agent reading the
 root files as they are; write a file of its own only for what Agent Plugins can't say.
+
+**`scripts/sync.mjs` names no host and nothing that reads like a credential**, which is why the
+references above aren't in its comments. It ships inside the plugin (the plugin is the whole repo),
+and Anthropic's directory scan holds any script that both spells a remote URL and passes along
+something credential-shaped as one that can send the installer's key off the machine. The first
+submission was held for exactly that: a `code.claude.com` link in a comment, a `${key}` in the
+skill check's regex and a `headers` passthrough nothing used. The MCP server signs in with OAuth
+and takes no key, so the script copies only each server's `url`, and fails on anything else in
+`mcp.json` rather than forwarding it.
 
 ## Skills
 
