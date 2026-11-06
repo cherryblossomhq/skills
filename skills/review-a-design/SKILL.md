@@ -33,8 +33,8 @@ parts it checks, so offer it rather than running it.
    joins two outputs. Connectors put the right signal on the right pin.
 5. **Board, if it's laid out.** `look` at the PCB and read its numbers: unrouted connections, parts
    off the board, overlaps. Then the layout itself: decoupling capacitors at their pins, a switching
-   regulator's loops short, power nets wide enough for their current, a ground pour, clearance for
-   high-voltage nets.
+   regulator's loops short, power nets wide enough for their current (the widths in `route-a-board`),
+   a ground pour, clearance for high-voltage nets.
 
 ## Report
 

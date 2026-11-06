@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "cherryblossom",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Design schematics and PCBs in Cherry Blossom from your AI assistant: its MCP server, and skills for building, checking and laying out boards.",
   "author": {
     "name": "Cherry Blossom",

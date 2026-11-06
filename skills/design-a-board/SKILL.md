@@ -37,10 +37,8 @@ order of work around them.
    `tidy_schematic`: `whole_sheet` on a new project, otherwise only the blocks you made or changed.
 5. **Check.** `run_checks`, and fix every problem you introduced. Then `look` at the schematic once
    and fix what the numbers show: overlaps, wires through symbols, unconnected pins.
-6. **Board, only when the user asks.** `layout_pcb`, then `place_parts` for what placement decides
-   (decoupling at the pins, a regulator's input and output loops), `set_net_width` for power nets,
-   `set_pour` GND on both layers, `route_pcb`, `set_pour` with stitch, `run_checks`, then `look` at
-   the PCB. If connections stay unrouted, read why in the `route_pcb` result before changing anything.
+6. **Board, only when the user asks.** Lay it out and route it as the `route-a-board` skill says:
+   placement first, power nets at their width before the signals, a GND pour, then `run_checks`.
 
 ## Report
 
