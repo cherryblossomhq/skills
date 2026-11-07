@@ -13,6 +13,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      # Generated manifests match plugin.json and mcp.json; every skill meets the Agent Skills spec.
-      - run: npm run check
+      - name: Agent manifests agree with plugin.json and mcp.json
+        run: |
+          for f in .claude-plugin/plugin.json .cursor-plugin/plugin.json; do
+            jq -e --slurpfile p plugin.json --slurpfile m mcp.json '
+              ($p[0] | {name, version, description, homepage, repository, license, keywords})
+                == {name, version, description, homepage, repository, license, keywords}
+              and [.mcpServers[].url] == [$m[0].mcpServers[].url]' "$f" > /dev/null \
+              || { echo "::error file=$f::differs from plugin.json or mcp.json"; exit 1; }
+          done
+      - name: Skills meet the Agent Skills spec
+        run: |
+          pipx install skills-ref==0.1.1
+          for d in skills/*/; do agentskills validate "$d"; done
       - run: npx --yes @anthropic-ai/claude-code plugin validate --strict .

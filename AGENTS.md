@@ -9,6 +9,21 @@ a symlink.
 One plugin for every AI agent: Cherry Blossom's MCP server and its skills. It is published from this
 repo to Claude Code, Codex and Cursor, and the skills to any agent through `npx skills`.
 
+## Only Markdown, text, JSON, YAML and images
+
+The plugin is the whole repo, and Anthropic's directory accepts from an organization it hasn't
+verified only Markdown, plain text, JSON, YAML and PNG, JPEG, GIF, WebP or ICO images, each text
+file UTF-8 with no NUL bytes. Version 0.2.0 was refused for a sync script (`scripts/sync.mjs`), the
+`package.json` that ran it and an SVG logo. So the repo holds:
+
+- No scripts or programs, nothing that starts with `#!`, and no package manager file
+  (`package.json`, lockfiles, `pnpm-workspace.yaml` and the like).
+- No SVG: the logo is `assets/logo.png`, 512 px with a transparent background.
+- No `CLAUDE.md` and no symlinks (see above).
+
+A check that needs code runs in CI from a published tool, as the skill check does, never from a
+file in the repo.
+
 ## One description, many manifests
 
 The plugin is described once, at the root, in the vendor-neutral
@@ -20,31 +35,27 @@ The plugin is described once, at the root, in the vendor-neutral
 | `mcp.json` | The MCP server | Codex, Cursor |
 | `skills/<name>/SKILL.md` | The skills ([Agent Skills](https://agentskills.io/specification)) | every agent |
 
-Everything else an agent needs is **generated** by `scripts/sync.mjs` from those two files:
+The other agents' files repeat parts of those two, by hand:
 
-| Generated file | For |
-|---|---|
-| `.claude-plugin/plugin.json` | Claude Code, which doesn't read the root manifest ([reference](https://code.claude.com/docs/en/plugins/manifest-reference)) |
-| `.claude-plugin/marketplace.json` | `claude plugin marketplace add cherryblossomhq/skills` ([reference](https://code.claude.com/docs/en/plugins/marketplace-reference)) |
-| `.cursor-plugin/plugin.json` | Cursor's own format, which carries the logo ([reference](https://cursor.com/docs/reference/plugins)) |
-| `.cursor-plugin/marketplace.json` | Cursor's Import from Repo and team marketplaces |
-| `.agents/plugins/marketplace.json` | `codex plugin marketplace add cherryblossomhq/skills` ([reference](https://developers.openai.com/plugins/build/plugins)) |
+| File | For | Repeats |
+|---|---|---|
+| `.claude-plugin/plugin.json` | Claude Code, which doesn't read the root manifest ([reference](https://code.claude.com/docs/en/plugins/manifest-reference)) | the metadata, OpenAI's display name, logo (`icon`) and links, each server's `url` as `type: "http"` |
+| `.claude-plugin/marketplace.json` | `claude plugin marketplace add cherryblossomhq/skills` ([reference](https://code.claude.com/docs/en/plugins/marketplace-reference)) | name, short description, owner |
+| `.cursor-plugin/plugin.json` | Cursor's own format, which carries the logo ([reference](https://cursor.com/docs/reference/plugins)) | the metadata, the logo, each server's `url` |
+| `.cursor-plugin/marketplace.json` | Cursor's Import from Repo and team marketplaces | name, owner |
+| `.agents/plugins/marketplace.json` | `codex plugin marketplace add cherryblossomhq/skills` ([reference](https://developers.openai.com/plugins/build/plugins)) | name, display name, category |
 
-Never edit a generated file: edit the root, run `npm run sync`, and commit both. CI runs
-`npm run check`, which fails when a generated file is stale or a skill breaks the spec, and
-`claude plugin validate --strict`.
+Edit the root first, then the files that repeat what you changed, in the same commit. CI fails when
+the two `plugin.json` files' metadata (name, version, description, homepage, repository, license,
+keywords) or server URLs differ from the root's, when a skill breaks the Agent Skills spec
+(`agentskills validate`, the spec's reference validator) and on `claude plugin validate --strict`.
 
-**Adding an agent** is one entry in `TARGETS` in `scripts/sync.mjs`. Prefer an agent reading the
-root files as they are; write a file of its own only for what Agent Plugins can't say.
+**Adding an agent**: prefer one that reads the root files as they are; write a file of its own only
+for what Agent Plugins can't say, and add it to the table above.
 
-**`scripts/sync.mjs` names no host and nothing that reads like a credential**, which is why the
-references above aren't in its comments. It ships inside the plugin (the plugin is the whole repo),
-and Anthropic's directory scan holds any script that both spells a remote URL and passes along
-something credential-shaped as one that can send the installer's key off the machine. The first
-submission was held for exactly that: a `code.claude.com` link in a comment, a `${key}` in the
-skill check's regex and a `headers` passthrough nothing used. The MCP server signs in with OAuth
-and takes no key, so the script copies only each server's `url`, and fails on anything else in
-`mcp.json` rather than forwarding it.
+The MCP server signs in with OAuth and takes no key. Give each manifest only the server's `url`:
+the directory's scan holds a plugin that passes along anything credential-shaped, such as
+`headers`.
 
 ## Skills
 
@@ -62,8 +73,9 @@ and takes no key, so the script copies only each server's `url`, and fails on an
 
 ## Releasing
 
-Bump `version` in `plugin.json` and run `npm run sync` on every release. Claude Code keeps installed
-copies on the version they have until it changes, so a skill edit without a bump never reaches them.
+Bump `version` in `plugin.json`, `.claude-plugin/plugin.json` and `.cursor-plugin/plugin.json` on
+every release. Claude Code keeps installed copies on the version they have until it changes, so a
+skill edit without a bump never reaches them.
 
 Listings in the vendors' directories are submitted by hand:
 
