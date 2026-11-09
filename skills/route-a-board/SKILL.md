@@ -1,6 +1,6 @@
 ---
 name: route-a-board
-description: Route a Cherry Blossom PCB well, from placement that routes cleanly to trace widths sized for their current, power before signals, a ground pour and a clean check. Use when the user asks to route, re-route, finish or tidy a board's traces in Cherry Blossom, or when route_pcb leaves connections unrouted or nets narrower than their width.
+description: Route a Cherry Blossom PCB well, from placement that routes cleanly to trace widths sized for their current, every net in one routing call, a ground pour and a clean check. Use when the user asks to route, re-route, finish or tidy a board's traces in Cherry Blossom, or when route_pcb leaves connections unrouted or nets narrower than their width.
 ---
 
 # Route a board in Cherry Blossom
@@ -38,20 +38,21 @@ https://www.trycherryblossom.com/docs/mcp.
    For 2 oz copper (`set_board`), halve them.
 5. **Ground.** `set_pour` GND on both layers. Pads on a poured net join the pour themselves, so GND
    needs no traces.
-6. **Power first, then signals.** `route_pcb` with `nets` set to the current-carrying nets, then
-   `route_pcb` with no nets for the rest.
-7. **Read the result before changing anything.** It says what stayed unrouted, which nets went in
-   narrower than their width, and why:
-   - **Narrower:** do what it says. That means routing those nets first, or drawing them with
-     `draw_trace` from pin to pin at the width, or making room. Never use a polygon pour in place
-     of a trace.
-   - **Short of room:** make the board bigger with `set_board`, then run `layout_pcb` with
-     `relayout_all` and route again.
-   - **Stuck at fine-pitch pads (USB-C, QFN):** routing again on the same layout gives the same
-     answer. Move or turn the part, loosen the rules if the fab allows, or leave those connections
-     to the user.
-   - **After moving parts or changing a width:** `clear_routing` those nets or refs, then route
-     again.
+6. **Route in one call.** `route_pcb` with no nets. It holds every net with a width at that width
+   wherever it fits, necks down only where there's no room, and when anything is left open or
+   narrower it routes the board again in other orders and keeps the best. Don't route nets in calls
+   of their own to order them: the later call can't move what the first laid, and it routes less.
+   To put some nets first, pass `priority`. To route again from scratch, pass `clear: true`.
+7. **Read the result before changing anything.** It names each connection still open and each
+   stretch laid narrower by its pins and coordinates (`run_checks` names the open ones too):
+   - **Narrower:** it says how long and where. A few tenths of a millimetre beside a small pad is
+     the pad's own width and fine; say how long it is. Draw a longer one with `draw_trace` from pin
+     to pin at the width, or make room there. Never use a polygon pour in place of a trace.
+   - **Open:** routing again on the same layout and rules gives the same answer. Change the layout
+     near the named pins with `place_parts` (a few tenths of a millimetre can open a channel), draw
+     the connection with `draw_trace`, loosen the rules if the fab allows, or, when it says the
+     board is short of room, make it bigger with `set_board`. Then `route_pcb` with `clear: true`.
+   - **After moving parts or changing a width:** `route_pcb` with `clear: true`.
 8. **Finish.** `set_pour` GND with `stitch`, then `run_checks`, and fix every error. Then `look` at
    the PCB once.
 
@@ -60,7 +61,7 @@ https://www.trycherryblossom.com/docs/mcp.
 Say in plain words:
 - what you routed;
 - the width of each power net and the current you assumed;
-- what's left unrouted or narrower, and why.
+- what's left unrouted or narrower, by its pins, and how long a narrower stretch is.
 
 End with the project's link. Gerbers and the other fabrication files come from the editor's Export
 menu.
