@@ -10,7 +10,8 @@ them:
   the editor.
 - **Skills**: how to go about it.
   - `design-a-board`: from an idea or a spec to a checked schematic and, when you ask, a routed board.
-  - `route-a-board`: placement, trace widths and routing order for a clean, routed PCB.
+  - `route-a-board`: placement, trace widths, routing in one call and reading what's left, for a clean,
+    routed PCB.
   - `review-a-design`: a read-only review of an existing design, worst problem first.
 
 It works on every Cherry Blossom plan, Free included, and spends none of your Cherry Blossom AI
